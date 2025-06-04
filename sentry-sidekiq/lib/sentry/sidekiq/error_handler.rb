@@ -24,7 +24,7 @@ module Sentry
         # If Sentry is configured to only report an error _after_ all retries have been exhausted,
         # and if the job is retryable, and have not exceeded the retry_limit,
         # return early.
-        if Sentry.configuration.sidekiq.report_after_job_retries && retryable?(context)
+        if (sidekiq_config.dig(:sentry, :report_after_job_retries) || Sentry.configuration.sidekiq.report_after_job_retries) && retryable?(context)
           retry_count = context.dig(:job, "retry_count")
           if retry_count.nil? || retry_count < retry_limit(context, sidekiq_config) - 1
             return
